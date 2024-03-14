@@ -7,134 +7,231 @@ int IntTime()
 }
 
 Console.OutputEncoding = Encoding.UTF8;
-Player playerone = new Player("merely",300);
-Player Bot = new Player("BOT",300);
+Console.WriteLine("Enter your name");
+string name = Console.ReadLine();
+Console.WriteLine("Enter your balance");
+int balance = int.Parse(Console.ReadLine());
+Player PlayerOne = new Player(name, balance);
+Player Bot = new Player("BOT", 300000);
 Random rand = new Random(IntTime());
-Random random = new Random(IntTime()+123);
-while (playerone.CheckSum()&&Bot.CheckSum())
+Random random = new Random(IntTime() + 123);
+while (true)
 {
-    Console.WriteLine("\nYour cards:");
-    playerone.ShowCards();
-    Console.WriteLine($"\nsum of cards:{playerone.CardsSum()}");
-    Console.WriteLine("\nBot cards:");
-    Bot.ShowCards();
-    Console.WriteLine($"\nsum of cards:{Bot.CardsSum()}");
-    Console.WriteLine("\nВиберіть дію\n[1]-Взяти карту\n[2]-Закінчити гру\n[3]-Вихід");
-    int temp = int.Parse(Console.ReadLine());
-    switch (temp)
+    Console.WriteLine("Select option\n[1]-Show player info\n[2]-Play BlackJack\n[3]-Exit");
+    int action = int.Parse(Console.ReadLine());
+    switch (action)
     {
-        case 1: int card = rand.Next(2,12);
-                playerone.TakeCard(card);
-                while (playerone.CardsSum() > Bot.CardsSum()&&Bot.CheckSum()&&Bot.CardsSum()!=21&&playerone.CheckSum())
-                {
-                    card = random.Next(2,12);
-                    Bot.TakeCard(card);
-                }
-                if (!Bot.CheckSum()&&playerone.CardsSum()<=21)
-                {
-                    Console.WriteLine("Ви виграли");
-                    Console.WriteLine("\nYour cards:");
-                    playerone.ShowCards();
-                    Console.WriteLine($"\nsum of cards:{playerone.CardsSum()}");
-                    Console.WriteLine("\nBot cards:");
-                    Bot.ShowCards();
-                    Console.WriteLine($"\nsum of cards:{Bot.CardsSum()}");
-                }else if (!playerone.CheckSum() && Bot.CardsSum() <= 21)
-                {
-                    Console.WriteLine("Ви програли");
-                    Console.WriteLine("\nYour cards:");
-                    playerone.ShowCards();
-                    Console.WriteLine($"\nsum of cards:{playerone.CardsSum()}");
-                    Console.WriteLine("\nBot cards:");
-                    Bot.ShowCards();
-                    Console.WriteLine($"\nsum of cards:{Bot.CardsSum()}");
-                }else if( Bot.CardsSum() >= 21&&playerone.CardsSum()>=21)
-                {   Console.WriteLine("Нічия"); 
-                    Console.WriteLine("\nYour cards:");
-                    playerone.ShowCards();
-                    Console.WriteLine($"\nsum of cards:{playerone.CardsSum()}");
-                    Console.WriteLine("\nBot cards:");
-                    Bot.ShowCards();
-                    Console.WriteLine($"\nsum of cards:{Bot.CardsSum()}");
-                }
-                break;
-        case 2:
-            while (playerone.CardsSum() > Bot.CardsSum()&&Bot.CheckSum()&&Bot.CardsSum()!=21)
-                {
-                    card = random.Next(2,12);
-                    Bot.TakeCard(card);
-                }
-            if (playerone.CardsSum() > Bot.CardsSum()||Bot.CardsSum()>21)
-            {
-                Console.WriteLine("Ви виграли");
-
-            }else Console.WriteLine("Ви програли");
+        case 1:
+            PlayerOne.PlayerInfo();
             break;
-        case 3: return; 
+        case 2:
+            bool game = true;
+            PlayerOne.MakeBet();
+            PlayerOne.ClearCards();
+            Bot.ClearCards();
+            while (PlayerOne.CheckSum() && Bot.CheckSum() && game)
+            {
+                Console.WriteLine("\nYour cards:");
+                PlayerOne.ShowCards();
+                Console.WriteLine($"\nsum of cards:{PlayerOne.CardsSum()}");
+                Console.WriteLine("\nBot cards:");
+                Bot.ShowCards();
+                Console.WriteLine($"\nsum of cards:{Bot.CardsSum()}");
+                Console.WriteLine("\nSelect option\n[1]-Take card\n[2]-End game\n");
+                int temp = int.Parse(Console.ReadLine());
 
+                switch (temp)
+                {
+                    case 1:
+                        PlayerOne.TakeCard(random, Bot);
+                        while (PlayerOne.CardsSum() > Bot.CardsSum() && Bot.CheckSum() && Bot.CardsSum() != 21 && PlayerOne.CheckSum())
+                        {
+
+                            Bot.TakeCard(rand, PlayerOne);
+                        }
+                        if (!Bot.CheckSum() && PlayerOne.CardsSum() <= 21)
+                        {
+                            PlayerOne.PlayerWin(Bot);
+                            Console.WriteLine("\nYour cards:");
+                            PlayerOne.ShowCards();
+                            Console.WriteLine($"\nsum of cards:{PlayerOne.CardsSum()}");
+                            Console.WriteLine("\nBot cards:");
+                            Bot.ShowCards();
+                            Console.WriteLine($"\nsum of cards:{Bot.CardsSum()}");
+                        }
+                        else if (!PlayerOne.CheckSum() && Bot.CardsSum() <= 21)
+                        {
+                            PlayerOne.PlayerLose(Bot);
+                            Console.WriteLine("\nYour cards:");
+                            PlayerOne.ShowCards();
+                            Console.WriteLine($"\nsum of cards:{PlayerOne.CardsSum()}");
+                            Console.WriteLine("\nBot cards:");
+                            Bot.ShowCards();
+                            Console.WriteLine($"\nsum of cards:{Bot.CardsSum()}");
+                        }
+                        else if (Bot.CardsSum() >= 21 && PlayerOne.CardsSum() >= 21)
+                        {
+                            PlayerOne.PlayerDraw();
+                            Console.WriteLine("\nYour cards:");
+                            PlayerOne.ShowCards();
+                            Console.WriteLine($"\nsum of cards:{PlayerOne.CardsSum()}");
+                            Console.WriteLine("\nBot cards:");
+                            Bot.ShowCards();
+                            Console.WriteLine($"\nsum of cards:{Bot.CardsSum()}");
+                        }
+                        break;
+                    case 2:
+                        while (PlayerOne.CardsSum() > Bot.CardsSum() && Bot.CheckSum() && Bot.CardsSum() != 21)
+                        {
+
+                            Bot.TakeCard(rand, PlayerOne);
+                        }
+                        if (PlayerOne.CardsSum() > Bot.CardsSum() || Bot.CardsSum() > 21)
+                        {
+                            PlayerOne.PlayerWin(Bot);
+
+                        }
+                        else PlayerOne.PlayerLose(Bot);
+                        game = false;
+                        break;
+                    default: break;
+                }
+            }
+            Console.WriteLine("Game end");
+            break;
+        case 3:
+            return;
+        default: break;
     }
-
-
 }
+
 
 enum CardsValue
 {
-    two=2,
-    three=3,
-    four=4,
-    five=5,
-    six=6,
-    seven=7,
-    eight=8,
-    nine=9,
-    ten=10, 
-    Valet=10,
-    Dama=10,
-    Korol=10,
-    Tuz=11
-
+    two = 2,
+    three = 3,
+    four = 4,
+    five = 5,
+    six = 6,
+    seven = 7,
+    eight = 8,
+    nine = 9,
+    ten_Valet_Dama_Korol = 10,
+    Tuz = 11
 }
 
 struct Player(string _name, int _balance)
 {
-    private string name=_name;
-    private int balance=_balance; 
-    CardsValue[] cards = new CardsValue[0];
-
-    public void TakeCard(int card)
+    private string name = _name;
+    public int balance = _balance;
+    public CardsValue[] cards = Array.Empty<CardsValue>();
+    private int rate;
+    public void PlayerInfo()
     {
-        CardsValue [] newcards = new CardsValue[cards.Length+1];
-        for(int i = 0;i<cards.Length;i++) newcards[i]=cards[i];
-        newcards[cards.Length] = (CardsValue)card;
+        Console.WriteLine($"Player name:{name}\tBalance:{balance}");
+    }
+    public void TakeCard(Random rand, Player player)
+    {
+        CardsValue[] newcards = new CardsValue[cards.Length + 1];
+        for (int i = 0; i < cards.Length; i++) newcards[i] = cards[i];
+        do
+        {
+            int card = rand.Next(2, 12);
+            newcards[cards.Length] = (CardsValue)card;
+        } while (!CheckCardRepeat(player));
         cards = newcards;
     }
-    public void ShowCards() {
-        
-        foreach(CardsValue element in cards)
+    public void ShowCards()
+    {
+
+        foreach (CardsValue element in cards)
         {
-            Console.Write("{0}\t",element);
+            Console.Write("{0}\t", element);
         }
     }
     public bool CheckSum()
     {
-        int sum=0;
-        foreach(CardsValue card in cards)
+        int sum = 0;
+        foreach (CardsValue card in cards)
         {
-            sum+=(int)card;
+            sum += (int)card;
         }
-        if(sum>21)return false;
+        if (sum > 21) return false;
 
         return true;
     }
     public int CardsSum()
     {
-        int sum=0;
-        foreach(CardsValue card in cards)
+        int sum = 0;
+        foreach (CardsValue card in cards)
         {
-            sum+=(int)card;
+            sum += (int)card;
         }
         return sum;
     }
+    private bool CheckCardRepeat(Player player)
+    {
 
+        CardsValue[] secondplayercards = player.cards;
+        foreach (CardsValue card in secondplayercards)
+        {
+            int temp = 0;
+            for (int i = 0; i < cards.Length; i++)
+            {
+                if (cards[i] == card && (int)card != 10)
+                {
+                    temp++;
+                }
+            }
+            for (int i = 0; i < secondplayercards.Length; i++)
+            {
+                if (secondplayercards[i] == card && (int)card != 10)
+                {
+                    temp++;
+                }
+            }
+            if (temp >= 4) return false;
+        }
+        return true;
+    }
+    public void ClearCards()
+    {
+        cards = Array.Empty<CardsValue>();
+    }
+    public void MakeBet()
+    {
+        Console.WriteLine("Make bet");
+        rate = int.Parse(Console.ReadLine());
+        if (rate > balance)
+        {
+            Console.WriteLine("Oops, you don`t have enough money. Good bye");
+            return;
+        }
+        balance = balance - rate;
+        Console.WriteLine($"you made bet. Your balance:{balance}");
+    }
+    public void PlayerWin(Player player)
+    {
+        Console.WriteLine("You win!");
+        balance = balance + rate * 2;
+        if (player.balance < rate)
+        {
+            Console.WriteLine("The dealer does not have enough money. Bye");
+            return;
+        }
+        player.balance = balance - rate;
+        Console.WriteLine($"Your balance:{balance}");
+    }
+    public void PlayerLose(Player player)
+    {
+        Console.WriteLine("You Lose!");
+        player.balance = balance + rate * 2;
+        Console.WriteLine($"Your balance:{balance}");
+    }
+    public void PlayerDraw()
+    {
+        Console.WriteLine("Draw!");
+        balance = +rate;
+        Console.WriteLine($"Your balance:{balance}");
+    }
 }
-
