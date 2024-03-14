@@ -24,11 +24,11 @@ while (playerone.CheckSum()&&Bot.CheckSum())
     switch (temp)
     {
         case 1: int card = rand.Next(2,12);
-                playerone.TakeCard(card);
+                playerone.TakeCard(random, Bot);
                 while (playerone.CardsSum() > Bot.CardsSum()&&Bot.CheckSum()&&Bot.CardsSum()!=21&&playerone.CheckSum())
                 {
-                    card = random.Next(2,12);
-                    Bot.TakeCard(card);
+                    
+                    Bot.TakeCard(rand,playerone);
                 }
                 if (!Bot.CheckSum()&&playerone.CardsSum()<=21)
                 {
@@ -61,8 +61,8 @@ while (playerone.CheckSum()&&Bot.CheckSum())
         case 2:
             while (playerone.CardsSum() > Bot.CardsSum()&&Bot.CheckSum()&&Bot.CardsSum()!=21)
                 {
-                    card = random.Next(2,12);
-                    Bot.TakeCard(card);
+                   
+                    Bot.TakeCard(rand,playerone);
                 }
             if (playerone.CardsSum() > Bot.CardsSum()||Bot.CardsSum()>21)
             {
@@ -87,25 +87,23 @@ enum CardsValue
     seven=7,
     eight=8,
     nine=9,
-    ten=10, 
-    Valet=10,
-    Dama=10,
-    Korol=10,
+    ten_Valet_Dama_Korol=10, 
     Tuz=11
-
 }
 
 struct Player(string _name, int _balance)
 {
     private string name=_name;
     private int balance=_balance; 
-    CardsValue[] cards = new CardsValue[0];
+    public CardsValue[] cards = new CardsValue[0];
 
-    public void TakeCard(int card)
-    {
+    public void TakeCard(Random rand, Player player)
+    { 
         CardsValue [] newcards = new CardsValue[cards.Length+1];
         for(int i = 0;i<cards.Length;i++) newcards[i]=cards[i];
-        newcards[cards.Length] = (CardsValue)card;
+        do{
+            int card = rand.Next(2,12);
+            newcards[cards.Length] = (CardsValue)card; }while(!CheckCardRepeat(player));
         cards = newcards;
     }
     public void ShowCards() {
@@ -134,6 +132,31 @@ struct Player(string _name, int _balance)
             sum+=(int)card;
         }
         return sum;
+    }
+    private bool CheckCardRepeat(Player player)
+    {
+        
+        CardsValue[] secondplayercards = player.cards;
+        foreach(CardsValue card in secondplayercards)
+        {
+            int temp=0;
+            for(int i = 0; i < cards.Length; i++)
+            {
+                if(cards[i] == card&&(int)card!=10)
+                {
+                    temp++;
+                }
+            }
+            for(int i = 0; i < secondplayercards.Length; i++)
+            {
+                if(secondplayercards[i] == card&&(int)card!=10)
+                {
+                    temp++;
+                }
+            }
+            if(temp>=4)return false;
+        }
+        return true;
     }
 
 }
