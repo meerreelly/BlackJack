@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 int IntTime()
 {
     DateTime currentTime = DateTime.Now;
@@ -203,12 +204,12 @@ struct Player(string _name, int _balance)
         if(balance == 0)
         {
             Console.WriteLine("Oops, you don`t have money.");
-            return;
+            Environment.Exit(0);
         }
         if (player.balance == 0)
         {
             Console.WriteLine("Oops, Dealer don`t have money.");
-            return;
+            Environment.Exit(0);
         }
 
         Console.WriteLine("Make bet");
