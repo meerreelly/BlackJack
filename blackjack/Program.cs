@@ -26,7 +26,7 @@ while (true)
             break;
         case 2:
             bool game = true;
-            PlayerOne.MakeBet();
+            PlayerOne.MakeBet(Bot);
             PlayerOne.ClearCards();
             Bot.ClearCards();
             while (PlayerOne.CheckSum() && Bot.CheckSum() && game)
@@ -198,14 +198,36 @@ struct Player(string _name, int _balance)
     {
         cards = Array.Empty<CardsValue>();
     }
-    public void MakeBet()
+    public void MakeBet(Player player)
     {
+        if(balance == 0)
+        {
+            Console.WriteLine("Oops, you don`t have money.");
+            return;
+        }
+        if (player.balance == 0)
+        {
+            Console.WriteLine("Oops, Dealer don`t have money.");
+            return;
+        }
+
         Console.WriteLine("Make bet");
         rate = int.Parse(Console.ReadLine());
         if (rate > balance)
         {
-            Console.WriteLine("Oops, you don`t have enough money. Good bye");
-            return;
+            while (rate > balance)
+            {
+                Console.WriteLine("Oops, you don`t have enough money. Change your bet");
+                rate = int.Parse(Console.ReadLine());
+            }
+        }
+        if (rate > player.balance)
+        {
+            while (rate > player.balance)
+            {
+                Console.WriteLine($"Oops, Dealer have enough money. Change your bet. Dealer balance:{player.balance}");
+                rate = int.Parse(Console.ReadLine());
+            }
         }
         balance = balance - rate;
         Console.WriteLine($"you made bet. Your balance:{balance}");
@@ -214,11 +236,6 @@ struct Player(string _name, int _balance)
     {
         Console.WriteLine("You win!");
         balance = balance + rate * 2;
-        if (player.balance < rate)
-        {
-            Console.WriteLine("The dealer does not have enough money. Bye");
-            return;
-        }
         player.balance = balance - rate;
         Console.WriteLine($"Your balance:{balance}");
     }
