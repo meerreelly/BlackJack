@@ -1,10 +1,16 @@
 ﻿using System.Text;
+int IntTime()
+{
+    DateTime currentTime = DateTime.Now;
+    int timeAsInt = currentTime.Hour * 10000 + currentTime.Minute * 100 + currentTime.Second;
+    return timeAsInt;
+}
 
 Console.OutputEncoding = Encoding.UTF8;
 Player playerone = new Player("merely",300);
 Player Bot = new Player("BOT",300);
-Random rand = new Random(312);
-Random random = new Random(138);
+Random rand = new Random(IntTime());
+Random random = new Random(IntTime()+123);
 while (playerone.CheckSum()&&Bot.CheckSum())
 {
     Console.WriteLine("\nYour cards:");
